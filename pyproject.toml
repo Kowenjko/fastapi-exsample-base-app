@@ -5,7 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "alembic>=1.17.1",
     "asyncpg>=0.30.0",
+    "black>=25.9.0",
     "fastapi[standard]>=0.121.0",
     "pydantic-settings>=2.11.0",
     "pydantic[email]>=2.12.4",
