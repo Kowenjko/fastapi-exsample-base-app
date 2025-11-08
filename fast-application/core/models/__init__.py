@@ -3,7 +3,7 @@ __all__ = (
     "Base",
     "User",
     # "Pet",
-    "Address",
+    # "Address",
 )
 
 from .db_helper import db_helper
@@ -11,4 +11,4 @@ from .base import Base
 from .user import User
 
 # from .pet import Pet
-from .address import Address
+# from .address import Address

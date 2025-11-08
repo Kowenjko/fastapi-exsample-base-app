@@ -20,9 +20,9 @@ class User(IntIdPkMixin, CreatedAtMixin, Base):
         server_default=true(),
     )
 
-    addresses: Mapped[list["Address"]] = relationship(
-        back_populates="user",
-    )
+    # addresses: Mapped[list["Address"]] = relationship(
+    #     back_populates="user",
+    # )
 
     @property
     def email(self) -> str:
