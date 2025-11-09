@@ -7,40 +7,23 @@ from core.config import settings
 
 from contextlib import asynccontextmanager
 
-from core.models import db_helper, Base
+from core.models import db_helper
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # # startup
-    # if not broker.is_worker_process:
-    #     await broker.startup()
-
-    # FastStream broker
-    # await broker.start()
 
     yield
     # shutdown
-    print("dispose engine")
 
     await db_helper.dispose()
-
-    # FastStream broker
-    # await broker.stop()
-
-    # if not broker.is_worker_process:
-    #     await broker.shutdown()
 
 
 main_app = FastAPI(lifespan=lifespan)
 
 
-main_app.include_router(api_router, prefix=settings.api.prefix)
-
-
-@main_app.get("/")
-def read_root():
-    return {"Hello": "World"}
+main_app.include_router(api_router)
 
 
 if __name__ == "__main__":
