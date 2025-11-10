@@ -4,7 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from crud import users as users_crud
 from core.models import db_helper, User
-from core.schemas.user import UserCreate, UserRead
+from fastapi import HTTPException
+from core.schemas.user import UserCreate, UserRead, UserUpdate
 
 router = APIRouter(tags=["Users"])
 
@@ -24,7 +25,35 @@ async def create_user(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     user_create: UserCreate,
 ) -> User:
-    print(user_create)
     user = await users_crud.create_user(session=session, user_create=user_create)
-
     return user
+
+
+@router.patch("/{user_id}", response_model=UserRead)
+async def update_user(
+    user_id: int,
+    user_update: UserUpdate,
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+) -> User:
+    user = await users_crud.get_user_by_id(session=session, user_id=user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user = await users_crud.update_user(
+        session=session,
+        user=user,
+        user_update=user_update,
+    )
+    return user
+
+
+@router.delete("/{user_id}", status_code=204)
+async def delete_user(
+    user_id: int,
+    session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
+) -> None:
+    user = await users_crud.get_user_by_id(session=session, user_id=user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    await users_crud.delete_user(session=session, user=user)

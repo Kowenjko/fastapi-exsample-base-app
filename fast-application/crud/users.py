@@ -3,7 +3,22 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import User
-from core.schemas.user import UserCreate
+from core.schemas.user import UserCreate, UserUpdate
+
+
+async def get_user_by_id(session: AsyncSession, user_id: int) -> User | None:
+    return await session.get(User, user_id)
+
+
+async def update_user(
+    session: AsyncSession,
+    user: User,
+    user_update: UserUpdate,
+) -> User:
+    for name, value in user_update.model_dump(exclude_unset=True).items():
+        setattr(user, name, value)
+    await session.commit()
+    return user
 
 
 async def get_all_users(session: AsyncSession) -> Sequence[User]:
@@ -21,3 +36,11 @@ async def create_user(session: AsyncSession, user_create: UserCreate) -> User:
     # await session.refresh(user)
 
     return user
+
+
+async def delete_user(
+    session: AsyncSession,
+    user: User,
+) -> None:
+    await session.delete(user)
+    await session.commit()
