@@ -9,6 +9,8 @@ from .dependencies.func_deps import (
 )
 from utils.helper import GreatHelper, GreatService
 
+from .dependencies.cls_deps import path_reader, PathReaderDependency
+
 
 router = APIRouter(tags=["Dependencies Examples"])
 
@@ -93,4 +95,18 @@ def great_service_as_dependency(
     return {
         "service": service.as_dict(),
         "message": "This is a great service as dependency example.",
+    }
+
+
+@router.get("/path-reader-dependency-from-method")
+def path_reader_dependency_from_method(
+    reader: Annotated[
+        PathReaderDependency,
+        Depends(path_reader.as_dependency),
+        # Depends(PathReaderDependency(source="direct/bar").as_dependency),
+    ],
+):
+    return {
+        "read_result": reader.read(foo="bar"),
+        "message": "This is a path reader dependency from method example.",
     }
