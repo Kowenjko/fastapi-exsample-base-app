@@ -9,7 +9,13 @@ from .dependencies.func_deps import (
 )
 from utils.helper import GreatHelper, GreatService
 
-from .dependencies.cls_deps import path_reader, PathReaderDependency
+from .dependencies.cls_deps import (
+    path_reader,
+    PathReaderDependency,
+    TokenIntrospectResult,
+    access_required,
+    HeaderAccessDependency,
+)
 
 
 router = APIRouter(tags=["Dependencies Examples"])
@@ -109,4 +115,18 @@ def path_reader_dependency_from_method(
     return {
         "read_result": reader.read(foo="bar"),
         "message": "This is a path reader dependency from method example.",
+    }
+
+
+@router.get("/direct-cls-dependency")
+def direct_cls_dependency(
+    token_data: Annotated[
+        TokenIntrospectResult,
+        # Depends(access_required),
+        Depends(HeaderAccessDependency(secret_token="new_token")),
+    ],
+):
+    return {
+        "token_data": token_data.model_dump(),
+        "message": "This is a direct class-based dependency example.",
     }
