@@ -4,6 +4,8 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from api import router as api_router
+from views import router as views_router
+
 from core.config import settings
 
 from contextlib import asynccontextmanager
@@ -25,6 +27,10 @@ main_app = FastAPI(default_response_class=ORJSONResponse, lifespan=lifespan)
 
 
 main_app.include_router(api_router)
+
+main_app.include_router(
+    views_router,
+)
 
 
 if __name__ == "__main__":

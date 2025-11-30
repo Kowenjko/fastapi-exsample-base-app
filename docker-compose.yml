@@ -1,10 +1,10 @@
 services:
-  pg:
+  pg2:
     image: postgres
     environment:
-      POSTGRES_DB: shop
-      POSTGRES_USER: shop
-      POSTGRES_PASSWORD: shop
+      POSTGRES_DB: shop2
+      POSTGRES_USER: shop2
+      POSTGRES_PASSWORD: shop2
     ports:
       - '5432:5432'
 
