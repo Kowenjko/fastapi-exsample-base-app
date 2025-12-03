@@ -1,3 +1,8 @@
+import logging
+from typing import Literal
+
+from pydantic import AmqpDsn
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel, PostgresDsn
 
@@ -14,6 +19,21 @@ class RunConfig(BaseModel):
     port: int = 8000
 
 
+class LoggingConfig(BaseModel):
+    log_level: Literal[
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "critical",
+    ] = "info"
+    log_format: str = LOG_DEFAULT_FORMAT
+
+    @property
+    def log_level_value(self) -> int:
+        return logging.getLevelNamesMapping()[self.log_level.upper()]
+
+
 class ApiV1Prefix(BaseModel):
     prefix: str = "/v1"
     users: str = "/users"
@@ -23,6 +43,10 @@ class ApiV1Prefix(BaseModel):
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v1: ApiV1Prefix = ApiV1Prefix()
+
+
+class TaskiqConfig(BaseModel):
+    url: AmqpDsn = "amqp://guest:guest@localhost:5672//"
 
 
 class DatabaseConfig(BaseSettings):
@@ -51,6 +75,8 @@ class Settings(BaseSettings):
 
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
+    logging: LoggingConfig = LoggingConfig()
+    taskiq: TaskiqConfig = TaskiqConfig()
     db: DatabaseConfig
 
 
