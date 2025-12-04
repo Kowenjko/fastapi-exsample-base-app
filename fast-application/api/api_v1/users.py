@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tasks import send_welcome_email
+# from tasks import send_welcome_email
 from core.fs_broker import user_registered
 
 from crud import users as users_crud
