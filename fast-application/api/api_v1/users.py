@@ -1,15 +1,23 @@
 import logging
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # from tasks import send_welcome_email
-from core.fs_broker import user_registered
+from core.fs_broker import user_registered, broker
+
+from faststream.nats import NatsMessage
 
 from crud import users as users_crud
 from core.models import db_helper, User
-from fastapi import HTTPException
-from core.schemas.user import UserCreate, UserRead, UserUpdate
+
+from core.schemas.user import (
+    UserCreate,
+    UserRead,
+    UserUpdate,
+    UserStatsRequest,
+    UserStatsResponse,
+)
 
 log = logging.getLogger(__name__)
 router = APIRouter(tags=["Users"])
@@ -25,6 +33,33 @@ async def get_users(
     users = await users_crud.get_all_users(session=session)
 
     return users
+
+
+@router.get("/{user_id}/stats")
+async def get_user_stats(
+    user_id: int,
+) -> UserStatsResponse:
+    msg = UserStatsRequest(
+        user_id=user_id,
+        stat_type="addresses",
+    )
+    subject = f"users.{user_id}.stats"
+    try:
+        response: NatsMessage = await broker.request(
+            message=msg.model_dump(mode="json"),
+            subject=subject,
+            timeout=1,
+        )
+    except TimeoutError:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Request timed out",
+        )
+
+    user_stats = UserStatsResponse.model_validate_json(
+        response.body,
+    )
+    return user_stats
 
 
 @router.post("", response_model=UserRead)
