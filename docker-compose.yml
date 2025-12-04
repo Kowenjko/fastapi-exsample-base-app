@@ -43,19 +43,23 @@ services:
       options:
         max-size: '1m'
 
-  adminer:
-    image: adminer
+   nats:
+    image: nats:2.11-alpine
     ports:
-      - '8080:8080'
+      - "4222:4222"
+  # adminer:
+  #   image: adminer
+  #   ports:
+  #     - '8080:8080'
 
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    ports:
-      - '5050:80'
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.org
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #     PGADMIN_CONFIG_SERVER_MODE: 'False'
+  #   ports:
+  #     - '5050:80'
 
 volumes:
   pgdata:
