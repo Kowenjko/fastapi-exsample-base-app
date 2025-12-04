@@ -17,7 +17,7 @@ class User(IntIdPkMixin, CreatedAtMixin, Base):
 
     is_active: Mapped[bool] = mapped_column(default=True, server_default=true())
 
-    addresses: Mapped[list["Address"]] = relationship(
+    addresses: Mapped[list["Address"] | None] = relationship(
         back_populates="user",
     )
 
