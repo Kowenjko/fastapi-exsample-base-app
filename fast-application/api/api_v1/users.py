@@ -1,8 +1,8 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.api_v1.utils.send_welcome_email import send_welcome_email
+from tasks import send_welcome_email
 
 from crud import users as users_crud
 from core.models import db_helper, User
@@ -26,10 +26,9 @@ async def get_users(
 async def create_user(
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
     user_create: UserCreate,
-    background_tasks: BackgroundTasks,
 ) -> User:
     user = await users_crud.create_user(session=session, user_create=user_create)
-    background_tasks.add_task(send_welcome_email, user_id=user.id)
+    await send_welcome_email.kiq(user_id=user.id)
     return user
 
 

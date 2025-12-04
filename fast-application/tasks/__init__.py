@@ -1,0 +1,1 @@
+from .welcome_email_notification import send_welcome_email
