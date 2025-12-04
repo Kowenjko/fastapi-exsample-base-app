@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict
+from datetime import datetime
 
 
 class UserBase(BaseModel):
@@ -13,9 +14,8 @@ class UserRead(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    created_at: datetime
 
 
 class UserUpdate(UserBase):
     username: str | None = None
-    foo: int | None = None
-    bar: int | None = None
