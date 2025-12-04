@@ -2,6 +2,7 @@ import logging
 from typing import Literal
 
 from pydantic import AmqpDsn
+from pydantic import NatsDsn
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel, PostgresDsn
@@ -51,6 +52,10 @@ class TaskiqConfig(BaseModel):
     log_format: str = WORKER_LOG_DEFAULT_FORMAT
 
 
+class FastStreamConfig(BaseModel):
+    nats_url: NatsDsn = "nats://localhost:4222"
+
+
 class DatabaseConfig(BaseSettings):
     url: PostgresDsn
     echo: bool = False
@@ -79,6 +84,7 @@ class Settings(BaseSettings):
     api: ApiPrefix = ApiPrefix()
     logging: LoggingConfig = LoggingConfig()
     taskiq: TaskiqConfig = TaskiqConfig()
+    faststream: FastStreamConfig = FastStreamConfig()
     db: DatabaseConfig
 
 

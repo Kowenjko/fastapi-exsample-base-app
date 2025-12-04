@@ -1,13 +1,18 @@
+import logging
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tasks import send_welcome_email
+# from tasks import send_welcome_email
+from core.fs_broker import user_registered
 
 from crud import users as users_crud
 from core.models import db_helper, User
 from fastapi import HTTPException
 from core.schemas.user import UserCreate, UserRead, UserUpdate
+
+log = logging.getLogger(__name__)
+router = APIRouter(tags=["Users"])
 
 router = APIRouter(tags=["Users"])
 
@@ -28,7 +33,12 @@ async def create_user(
     user_create: UserCreate,
 ) -> User:
     user = await users_crud.create_user(session=session, user_create=user_create)
-    await send_welcome_email.kiq(user_id=user.id)
+    log.info("Created user %s", user.id)
+    await user_registered.publish(
+        subject=f"users.{user.id}.created",
+        message=None,
+    )
+    # await send_welcome_email.kiq(user_id=user.id)
     return user
 
 
